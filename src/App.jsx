@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import CoinCard from './components/CoinCard';
 import LimitSelector from './components/LimitSelector';
 import FilterInput from './components/FilterInput';
+import SortSelector from './components/SortSelector';
 
 const API_URl = import.meta.env.VITE_API_URL;
 
@@ -17,6 +18,8 @@ function App() {
 
   const [filter, setFilter] = useState('');
 
+  const [sortBy, setSortBy] = useState('market_cap_desc');
+
   useEffect(() => {
     const fetchCoins = async () => {
       try {
@@ -25,7 +28,6 @@ function App() {
         );
         if (!res.ok) throw new Error('Failed to fetch data');
         const data = await res.json();
-        console.log(data);
 
         setCoins(data);
       } catch (err) {
@@ -38,12 +40,20 @@ function App() {
     fetchCoins();
   }, [limit]);
 
-  const filteredCoins = coins.filter((coin) => {
-    return (
-      coin.name.toLowerCase().includes(filter.toLowerCase()) ||
-      coin.symbol.toLowerCase().includes(filter.toLowerCase())
-    );
-  });
+  const filteredCoins = coins
+    .filter((coin) => {
+      return (
+        coin.name.toLowerCase().includes(filter.toLowerCase()) ||
+        coin.symbol.toLowerCase().includes(filter.toLowerCase())
+      );
+    })
+    .slice()
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'market_cap':
+          return b.market_cap - a.market.cap
+      }
+    });
 
   return (
     <div>
@@ -52,6 +62,7 @@ function App() {
       <div className='top-controls'>
         <FilterInput filter={filter} onFilterChange={setFilter} />
         <LimitSelector limit={limit} onLimitChange={setLimit} />
+        <SortSelector sortBy={sortBy} onSortChange={setSortBy} />
       </div>
       {error && <div className='error'>{error}</div>}
       {!loading && !error && (
