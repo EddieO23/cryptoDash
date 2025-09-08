@@ -1,5 +1,5 @@
 import { useState, useEffect, use } from 'react';
-import { useParams } from 'react-router';
+import { useParams, Link } from 'react-router';
 
 const API_URl = import.meta.env.VITE_COIN_API_URL;
 
@@ -15,7 +15,7 @@ function CoinsDetailPage() {
         const res = await fetch(`${API_URl}/${id}`);
         if (!res.ok) throw new Error('Failed to fetch coin data');
         const data = await res.json();
-        console.log(data);
+        // console.log(data);
         setCoin(data);
       } catch (err) {
         console.log(err);
@@ -29,7 +29,16 @@ function CoinsDetailPage() {
     fetchCoin();
   }, [id]);
 
-  return <div>Coins Details {id}</div>;
+  return (
+    <div className='coin-details-container'>
+      <Link to='/'>Back to Home</Link>
+      <h1 className='coin-details-title'>
+        {coin ? `${coin.name} (${coin.symbol})` : 'Coin Details'}
+      </h1>
+      {loading && <p>Loading...</p>}
+      {error && <div className='error'>{error}</div>}
+    </div>
+  );
 }
 
 export default CoinsDetailPage;
