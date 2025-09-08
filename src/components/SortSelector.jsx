@@ -1,5 +1,3 @@
-import React from 'react';
-
 function SortSelector({ sortBy, onSortChange }) {
   return (
     <div className='controls'>

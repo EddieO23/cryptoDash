@@ -1,5 +1,3 @@
-import React from 'react';
-
 function FilterInput({ filter, onFilterChange }) {
   return (
     <div className='filter'>

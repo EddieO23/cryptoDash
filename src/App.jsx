@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { Routes, Route } from 'react-router';
 
-import CoinCard from './components/CoinCard';
-import LimitSelector from './components/LimitSelector';
-import FilterInput from './components/FilterInput';
-import SortSelector from './components/SortSelector';
+import Header from './components/Header';
+import Home from './pages/Home';
+import AboutPage from './pages/about';
+import CoinsDetailPage from './pages/coin-details';
+import NotFoundPage from './pages/not-found';
 
 const API_URl = import.meta.env.VITE_API_URL;
 
@@ -40,41 +42,31 @@ function App() {
     fetchCoins();
   }, [limit]);
 
-  const filteredCoins = coins
-    .filter((coin) => {
-      return (
-        coin.name.toLowerCase().includes(filter.toLowerCase()) ||
-        coin.symbol.toLowerCase().includes(filter.toLowerCase())
-      );
-    })
-    .slice()
-    .sort((a, b) => {
-      switch (sortBy) {
-        case 'market_cap':
-          return b.market_cap - a.market.cap
-      }
-    });
-
   return (
-    <div>
-      <h1>🚀 Crypto Dash</h1>
-      {loading && <p>Loading...</p>}
-      <div className='top-controls'>
-        <FilterInput filter={filter} onFilterChange={setFilter} />
-        <LimitSelector limit={limit} onLimitChange={setLimit} />
-        <SortSelector sortBy={sortBy} onSortChange={setSortBy} />
-      </div>
-      {error && <div className='error'>{error}</div>}
-      {!loading && !error && (
-        <main className='grid'>
-          {filteredCoins.length > 0 ? (
-            filteredCoins.map((coin) => <CoinCard key={coin.id} coin={coin} />)
-          ) : (
-            <p>No matching coins.</p>
-          )}
-        </main>
-      )}
-    </div>
+    <>
+      <Header />
+      <Routes>
+        <Route
+          path='/'
+          element={
+            <Home
+              coins={coins}
+              filter={filter}
+              setFilter={setFilter}
+              limit={limit}
+              setLimit={setLimit}
+              sortBy={sortBy}
+              setSortBy={setSortBy}
+              loading={loading}
+              error={error}
+            />
+          }
+        />
+        <Route path='/about' element={<AboutPage />} />
+        <Route path='/coin/:id' element={<CoinsDetailPage />} />
+        <Route path='*' element={<NotFoundPage />} />
+      </Routes>
+    </>
   );
 }
 
